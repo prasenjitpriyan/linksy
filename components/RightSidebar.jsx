@@ -3,6 +3,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import News from './News'
 
 const RightSidebar = () => {
   const [input, setInput] = useState('')
@@ -29,6 +30,7 @@ const RightSidebar = () => {
           />
         </form>
       </div>
+      <News />
     </>
   )
 }
