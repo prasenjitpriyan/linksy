@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+export default {
+  images: {
+    domains: [
+      'saurav.tech',
+      'image.cnbcfm.com',
+      'other-possible-domains',
+      'a57.foxnews.com'
+    ]
+  }
+}
