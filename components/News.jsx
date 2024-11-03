@@ -28,8 +28,9 @@ export default function News() {
               <Image
                 height={70}
                 width={70}
+                priority
                 src={article.urlToImage}
-                className="rounded-xl"
+                className="rounded-xl w-auto h-auto"
                 alt="Image"
               />
             </div>
