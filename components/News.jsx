@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
 export default function News() {
@@ -15,7 +17,7 @@ export default function News() {
       <h4 className="font-bold text-xl px-4">Whats happening</h4>
       {news.slice(0, articleNum).map((article) => (
         <div key={article.url}>
-          <a href={article.url} target="_blank">
+          <Link href={article.url} target="_blank">
             <div className="flex items-center justify-between px-4 py-2 space-x-1 hover:bg-gray-200 transition duration-200">
               <div className="space-y-0.5">
                 <h6 className="text-sm font-bold">{article.title}</h6>
@@ -23,9 +25,14 @@ export default function News() {
                   {article.source.name}
                 </p>
               </div>
-              <img src={article.urlToImage} width={70} className="rounded-xl" />
+              <Image
+                height={500}
+                src={article.urlToImage}
+                width={500}
+                className="rounded-xl"
+              />
             </div>
-          </a>
+          </Link>
         </div>
       ))}
       <button
