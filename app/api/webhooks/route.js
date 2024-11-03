@@ -18,18 +18,16 @@ export async function POST(req) {
   const svix_timestamp = headerPayload.get('svix-timestamp')
   const svix_signature = headerPayload.get('svix-signature')
 
-  // If there are no headers, error out
+  // Check for missing headers
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response('Error occured -- no svix headers', {
-      status: 400
-    })
+    return new Response('Error occurred -- no svix headers', { status: 400 })
   }
 
   // Get the body
   const payload = await req.json()
   const body = JSON.stringify(payload)
 
-  // Create a new Svix instance with your secret.
+  // Create a new Svix instance with your secret
   const wh = new Webhook(WEBHOOK_SECRET)
 
   let evt
@@ -43,21 +41,21 @@ export async function POST(req) {
     })
   } catch (err) {
     console.error('Error verifying webhook:', err)
-    return new Response('Error occured', {
+    return new Response('Error occurred while verifying webhook', {
       status: 400
     })
   }
 
-  // Do something with the payload
-  // For this guide, you simply log the payload to the console
-  const { id } = evt?.data
-  const eventType = evt?.type
-  console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
+  // Handle the event
+  const { id, type: eventType } = evt?.data || {}
+  console.log(`Webhook with ID: ${id}, Type: ${eventType}`)
   console.log('Webhook body:', body)
 
+  // Handle user.created and user.updated events
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, first_name, last_name, image_url, email_addresses, username } =
-      evt?.data
+    const { first_name, last_name, image_url, email_addresses, username } =
+      evt.data
+
     try {
       const user = await createOrUpdateUser(
         id,
@@ -67,6 +65,7 @@ export async function POST(req) {
         email_addresses,
         username
       )
+
       if (user && eventType === 'user.created') {
         try {
           await clerkClient.users.updateUserMetadata(id, {
@@ -75,26 +74,24 @@ export async function POST(req) {
             }
           })
         } catch (error) {
-          console.log('Error updating user metadata:', error)
+          console.error('Error updating user metadata:', error)
         }
       }
     } catch (error) {
-      console.log('Error creating or updating user:', error)
-      return new Response('Error occured', {
+      console.error('Error creating or updating user:', error)
+      return new Response('Error occurred while creating or updating user', {
         status: 400
       })
     }
   }
 
+  // Handle user.deleted event
   if (eventType === 'user.deleted') {
-    const { id } = evt?.data
     try {
       await deleteUser(id)
     } catch (error) {
-      console.log('Error deleting user:', error)
-      return new Response('Error occured', {
-        status: 400
-      })
+      console.error('Error deleting user:', error)
+      return new Response('Error occurred while deleting user', { status: 400 })
     }
   }
 
