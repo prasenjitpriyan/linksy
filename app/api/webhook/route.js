@@ -6,10 +6,9 @@ export async function POST(req) {
     )
   }
 
-  const headerPayload = headers()
-  const svix_id = headerPayload.get('svix-id')
-  const svix_timestamp = headerPayload.get('svix-timestamp')
-  const svix_signature = headerPayload.get('svix-signature')
+  const svix_id = req.headers.get('svix-id')
+  const svix_timestamp = req.headers.get('svix-timestamp')
+  const svix_signature = req.headers.get('svix-signature')
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response('Error occurred -- no svix headers', {
